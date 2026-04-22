@@ -16,23 +16,29 @@ export default function Cart({ open, onClose }) {
 
   return (
     <>
+      {/* Overlay */}
       <div
         onClick={onClose}
-        className={`fixed inset-0 bg-black/40 transition-opacity duration-300 ${
+        className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 ${
           open ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
       />
 
+      {/* Sidebar */}
       <div
-  className={`fixed top-0 right-0 h-full w-96 bg-white text-black shadow-2xl transform transition-transform duration-300 z-50
-  ${open ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed top-0 right-0 h-full w-96 bg-white text-black shadow-2xl transform transition-transform duration-300 z-[60]
+        ${open ? "translate-x-0" : "translate-x-full"}`}
       >
         <div className="flex flex-col h-full">
+          {/* Header */}
           <div className="p-4 border-b flex justify-between items-center">
             <h2 className="text-xl font-bold">Shopping Cart</h2>
-            <button onClick={onClose} className="text-xl">✕</button>
+            <button onClick={onClose} className="text-xl">
+              ✕
+            </button>
           </div>
 
+          {/* Items */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {items.length === 0 ? (
               <p className="text-gray-500">Your cart is empty</p>
@@ -42,6 +48,7 @@ export default function Cart({ open, onClose }) {
                   <img
                     src={item.thumbnail}
                     className="w-16 h-16 object-cover rounded"
+                    alt={item.title}
                   />
 
                   <div className="flex-1">
@@ -87,6 +94,7 @@ export default function Cart({ open, onClose }) {
             )}
           </div>
 
+          {/* Footer */}
           <div className="p-4 border-t">
             <div className="flex justify-between font-bold mb-3">
               <span>Total:</span>

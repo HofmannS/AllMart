@@ -1,4 +1,4 @@
-# 🛒 NovaShop — E-commerce Frontend Application
+# 🛒 AllMart — E-commerce Frontend Application
 
 A modern, responsive e-commerce storefront built with React, showcasing real-world frontend architecture with global state management using Redux Toolkit, dynamic filtering, and an interactive shopping cart experience.
 
