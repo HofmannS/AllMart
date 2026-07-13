@@ -1,102 +1,122 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchProducts, fetchCategories } from "../features/products/productsSlice";
+import { useSearchParams } from "react-router-dom";
+import { Package } from "lucide-react";
+import {
+  fetchCategories,
+  fetchProductsPage,
+  setCategory,
+  setPage,
+} from "../features/products/productsSlice";
 import ProductCard from "../components/ProductCard";
-import ProductModal from "../components/ProductModal";
 import FiltersBar from "../components/FiltersBar";
+import ProductGridSkeleton from "../components/ui/ProductGridSkeleton";
+import ErrorState from "../components/ui/ErrorState";
+import EmptyState from "../components/ui/EmptyState";
 
-export default function Products() {
-    const dispatch = useDispatch();
+export default function ProductsPage() {
+  const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
 
-    const {
-        items,
-        status,
-        searchTerm,
-        selectedCategory,
-        sortBy,
-    } = useSelector((state) => state.products);
+  const {
+    items,
+    status,
+    error,
+    page,
+    limit,
+    total,
+    searchTerm,
+    selectedCategory,
+    categories,
+  } = useSelector((state) => state.products);
 
-    const [selectedProduct, setSelectedProduct] = useState(null);
+  const categoryParam = searchParams.get("category");
+  const debounceRef = useRef(null);
 
-    useEffect(() => {
-        dispatch(fetchProducts());
-        dispatch(fetchCategories());
-    }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
-    const processedProducts = useMemo(() => {
-        let result = [...items];
+  useEffect(() => {
+    dispatch(setCategory(categoryParam || "all"));
+  }, [categoryParam, dispatch]);
 
-        result = result.filter((product) =>
-            product.title.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
 
-        if (selectedCategory !== "all") {
-            result = result.filter(
-                (product) => product.category === selectedCategory
-            );
-        }
+    debounceRef.current = setTimeout(() => {
+      dispatch(
+        fetchProductsPage({ page, limit, searchTerm, category: selectedCategory })
+      );
+    }, searchTerm ? 300 : 0);
 
-        switch (sortBy) {
-            case "name-asc":
-              result.sort((a, b) => a.title.localeCompare(b.title));
-              break;
-          
-            case "name-desc":
-              result.sort((a, b) => b.title.localeCompare(a.title));
-              break;
-          
-            case "price-asc":
-              result.sort((a, b) => a.price - b.price);
-              break;
-          
-            case "price-desc":
-              result.sort((a, b) => b.price - a.price);
-              break;
-          
-            case "rating-asc":
-              result.sort((a, b) => a.rating - b.rating);
-              break;
-          
-            case "rating-desc":
-              result.sort((a, b) => b.rating - a.rating);
-              break;
-          
-            default:
-              break;
-          }
+    return () => clearTimeout(debounceRef.current);
+  }, [dispatch, page, limit, searchTerm, selectedCategory]);
 
+  const totalPages = Math.ceil(total / limit) || 1;
 
+  const activeCategory = categories.find((c) => c.slug === selectedCategory);
+  const pageTitle = activeCategory ? activeCategory.name : "All products";
 
-        return result;
-    }, [items, searchTerm, selectedCategory, sortBy]);
-
-    if (status === "loading") {
-        return <p className="p-4">Loading products...</p>;
-    }
-
-    return (
-        <div>
-            <FiltersBar />
-
-            <div className="px-4 md:px-8 py-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {processedProducts.map((product) => (
-                    <ProductCard
-                        key={product.id}
-                        product={product}
-                        onClick={setSelectedProduct} />
-                ))}
-            </div>
-            {selectedProduct && (
-                <ProductModal
-                    product={selectedProduct}
-                    onClose={() => setSelectedProduct(null)}
-                />
-            )}
-            {processedProducts.length === 0 && (
-                <p className="text-center py-10 text-gray-500">
-                    No products found
-                </p>
-            )}
-        </div>
+  const handleRetry = () => {
+    dispatch(
+      fetchProductsPage({ page, limit, searchTerm, category: selectedCategory })
     );
+  };
+
+  return (
+    <div className="page-container py-8 md:py-12">
+      <div className="mb-8">
+        <p className="section-title mb-2">Catalog</p>
+        <h1 className="text-3xl md:text-4xl font-medium tracking-tight mb-6">{pageTitle}</h1>
+        <FiltersBar />
+      </div>
+
+      {status === "loading" && <ProductGridSkeleton />}
+
+      {status === "failed" && (
+        <ErrorState message={error} onRetry={handleRetry} />
+      )}
+
+      {status === "succeeded" && items.length === 0 && (
+        <EmptyState
+          icon={Package}
+          title="No products found"
+          description="Try adjusting your search or filter."
+        />
+      )}
+
+      {status === "succeeded" && items.length > 0 && (
+        <>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {items.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-12 pt-6 border-t border-border">
+              <button
+                disabled={page <= 1}
+                onClick={() => dispatch(setPage(page - 1))}
+                className="text-sm transition-opacity duration-150 hover:opacity-60 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                ← Prev
+              </button>
+              <span className="text-xs text-muted">
+                {page} / {totalPages}
+              </span>
+              <button
+                disabled={page >= totalPages}
+                onClick={() => dispatch(setPage(page + 1))}
+                className="text-sm transition-opacity duration-150 hover:opacity-60 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                Next →
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
 }

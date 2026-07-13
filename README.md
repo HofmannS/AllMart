@@ -1,173 +1,111 @@
-# 🛒 AllMart — E-commerce Frontend Application
+# AllMart — E-commerce Frontend Application
 
-A modern, responsive e-commerce storefront built with React, showcasing real-world frontend architecture with global state management using Redux Toolkit, dynamic filtering, and an interactive shopping cart experience.
+A modern, responsive e-commerce storefront built with React, Redux Toolkit, and Tailwind CSS. Integrates with the DummyJSON API for products and authentication, featuring a complete shopping flow from browse to checkout.
 
----
+**Live Demo:** Deploy to [Vercel](https://vercel.com) and add your URL here.
 
-## 🧠 Key Highlights
-
-* Real API integration using DummyJSON
-* Scalable React architecture with Redux Toolkit
-* Global cart state with real-time updates
-* Dynamic search, filtering, and sorting
-* Interactive product modal (instead of separate product page)
-* Persistent cart using localStorage
-* Fully responsive UI built with Tailwind CSS
+[![CI](https://github.com/HofmannS/AllMart/actions/workflows/ci.yml/badge.svg)](https://github.com/HofmannS/AllMart/actions/workflows/ci.yml)
 
 ---
 
-## 🧱 Tech Stack
+## Features
 
-* React (Vite)
-* Redux Toolkit
-* React Router (v6)
-* Tailwind CSS
-* DummyJSON API
-
----
-
-## ✨ Core Features
-
-### 🛍 Product Management
-
-* Fetch products from API
-* Display products in responsive grid
-* Product modal with detailed information
-* Search products by title
-* Filter products by category
-* Sort products by:
-
-  * Name
-  * Price
-  * Rating
+- **Product catalog** — paginated listing with server-side search and category filtering across the full DummyJSON catalog (194 products)
+- **Product detail pages** — shareable URLs at `/products/:id` with reviews, stock, discounts, and brand info
+- **Shopping cart** — add/remove items, quantity controls, persistent via localStorage
+- **Checkout flow** — shipping form with validation, order confirmation, and order history
+- **Authentication** — real login via DummyJSON API with protected profile page
+- **Responsive UI** — mobile navigation, skeleton loaders, error states, toast notifications
+- **Design system** — Inter font, Lucide icons, reusable Button/Badge/Input components
 
 ---
 
-### 🛒 Cart System
+## Tech Stack
 
-* Add and remove products
-* Increase and decrease quantity
-* Real-time total price calculation
-* Animated dropdown cart (Amazon-style)
-* Cart badge in the header
-* Persistent cart using localStorage
-
----
-
-### 🪟 Product Modal
-
-* Opens on product click
-* Displays:
-
-  * Images gallery
-  * Description
-  * Price
-  * Rating
-  * Reviews
-* Add to cart directly from modal
-* Closes on overlay click
+| Layer | Technology |
+|-------|-----------|
+| Framework | React 19 + Vite 8 |
+| State | Redux Toolkit |
+| Routing | React Router v7 |
+| Styling | Tailwind CSS v4 |
+| Icons | Lucide React |
+| Notifications | React Hot Toast |
+| API | DummyJSON |
+| Testing | Vitest + Testing Library |
+| Deployment | Vercel |
 
 ---
 
-### 📱 UI / UX
+## Demo Credentials
 
-* Fully responsive (mobile-first)
-* Clean and modern design
-* Interactive hover effects
-* Sticky header with navigation
-* Dropdown cart with animations
-* Empty states for products and cart
+Login uses the DummyJSON auth API:
 
----
-
-## 🔀 Routing
-
-Client-side routing with React Router:
-
-* `/` → Home
-* `/products` → Product listing
-* `*` → NotFound page
+| Field | Value |
+|-------|-------|
+| Username | `emilys` |
+| Password | `emilyspass` |
 
 ---
 
-## 🧩 Project Structure
+## Routes
+
+| Path | Description |
+|------|-------------|
+| `/` | Home with hero, categories, featured products |
+| `/products` | Product listing with search, filter, sort, pagination |
+| `/products/:id` | Product detail page |
+| `/checkout` | Shipping form and order summary |
+| `/order-confirmation` | Order success page |
+| `/orders` | Order history (localStorage) |
+| `/login` | Sign in |
+| `/register` | Create account |
+| `/profile` | User profile (protected) |
+
+---
+
+## Architecture
+
+```text
+DummyJSON API
+     ↓
+Redux Toolkit (products, cart, auth, checkout, orders)
+     ↓
+Pages → Components → UI Primitives
+     ↓
+localStorage (cart, auth token, orders)
+```
+
+### Project Structure
 
 ```bash
 src/
+├── app/store.js
 ├── components/
-│   ├── ProductCard.jsx
-│   ├── ProductModal.jsx
-│   ├── FiltersBar.jsx
+│   ├── ui/              # Button, Badge, Input, Skeleton, etc.
+│   ├── layout/          # Layout, Footer
 │   ├── Header.jsx
-│   └── Cart.jsx
-│
-├── pages/
-│   ├── HomePage.jsx
-│   ├── ProductsPage.jsx
-│   └── NotFoundPage.jsx
-│
+│   ├── Cart.jsx
+│   └── ProductCard.jsx
 ├── features/
-│   ├── products/
-│   │   └── productsSlice.js
-│   └── cart/
-│       └── cartSlice.js
-│
-├── app/
-│   └── store.js
-│
-└── main.jsx
+│   ├── auth/
+│   ├── cart/
+│   ├── checkout/
+│   ├── orders/
+│   └── products/
+├── pages/
+├── hooks/
+└── utils/
 ```
 
 ---
 
-## 🔄 Data Flow
+## API
 
-```text
-API (DummyJSON)
-   ↓
-Redux Toolkit (productsSlice)
-   ↓
-Pages (Home / Products)
-   ↓
-Components (ProductCard / Modal)
-
-Cart State:
-Redux → Global Store → UI Updates
-```
+- Products: [https://dummyjson.com/products](https://dummyjson.com/products)
+- Auth: [https://dummyjson.com/docs/auth](https://dummyjson.com/docs/auth)
 
 ---
 
-## 🚀 Getting Started
+## Author
 
-```bash
-git clone https://github.com/HofmannS/AllMart.git
-cd AllMart
-npm install
-npm run dev
-```
-
----
-
-## 🌐 API
-
-This project uses the DummyJSON Products API:
-
-https://dummyjson.com/products
-
----
-
-## 📈 Future Improvements
-
-* Pagination or infinite scroll
-* Wishlist feature ❤️
-* Authentication system
-* Checkout flow
-* Animations with Framer Motion
-* Dark mode 🌙
-
----
-
-## 👨‍💻 Author
-
-Sergej Hofmann
-Frontend Developer
+**Sergej Hofmann** — Frontend Developer
