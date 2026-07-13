@@ -2,7 +2,7 @@
 
 A modern, responsive e-commerce storefront built with React, Redux Toolkit, and Tailwind CSS. Integrates with the DummyJSON API for products and authentication, featuring a complete shopping flow from browse to checkout.
 
-**Live Demo:** Deploy to [Vercel](https://vercel.com) and add your URL here.
+**Live Demo: https://allmart-nine.vercel.app/
 
 [![CI](https://github.com/HofmannS/AllMart/actions/workflows/ci.yml/badge.svg)](https://github.com/HofmannS/AllMart/actions/workflows/ci.yml)
 
